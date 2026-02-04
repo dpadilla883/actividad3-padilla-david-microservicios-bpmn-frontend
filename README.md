@@ -166,16 +166,7 @@ En `/bpmn` incluir:
 
 ---
 
-## 8) Evidencias recomendadas para el informe
-
-- Captura de Docker Desktop con los 5 contenedores corriendo
-- Capturas Postman: crear autor, crear publicación, error por authorId inexistente, cambios de estado
-- Capturas del Frontend: pantalla de autores y publicaciones
-- Capturas Token Simulation: 3 escenarios
-
----
-
-## 9) Troubleshooting rápido
+## 9) Troubleshooting 
 
 - **CORS**: si el frontend no puede llamar a los backends, agrega CORS en Spring (o proxy en Vite).
 - **Publications no valida authorId**: revisa `authors.base-url` / `AUTHORS_BASE_URL`.
