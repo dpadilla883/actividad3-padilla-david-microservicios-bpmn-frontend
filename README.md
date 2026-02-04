@@ -148,21 +148,13 @@ Estados editoriales mínimos:
 
 ---
 
-## 7) BPMN (Camunda Modeler) — requisito obligatorio
+## 7) BPMN (Camunda Modeler) 
 
-En `/bpmn` incluir:
+En `/bpmn` incluie:
 
 - Archivo `*.bpmn` exportado
-- Evidencia de Token Simulation (3 escenarios)
+- Evidencia de Token Simulation
 
-### Variables mínimas (Token Simulation)
-- `aprobado: true/false`
-- `requiereCambios: true/false`
-
-### Escenarios a evidenciar (mínimo 3)
-1. Aprobación directa → Final “Publicado”
-2. Rechazo → Final “Rechazado”
-3. Requiere cambios → vuelve a autor → luego aprobación → “Publicado”
 
 ---
 
