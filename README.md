@@ -16,8 +16,8 @@ Solución para la **Actividad de Aprendizaje 3**: 2 microservicios (**Authors** 
 ├─ authors-service/
 ├─ publications-service/
 ├─ frontend/
-├─ bpmn/                 # archivo .bpmn + evidencias de Token Simulation
-├─ docker-compose.yml    # obligatorio en la raíz
+├─ bpmn/                 
+├─ docker-compose.yml    
 └─ README.md
 ```
 
