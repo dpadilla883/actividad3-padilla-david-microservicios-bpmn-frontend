@@ -166,7 +166,7 @@ En `/bpmn` incluir:
 
 ---
 
-## 9) Troubleshooting 
+## 8) Troubleshooting 
 
 - **CORS**: si el frontend no puede llamar a los backends, agrega CORS en Spring (o proxy en Vite).
 - **Publications no valida authorId**: revisa `authors.base-url` / `AUTHORS_BASE_URL`.
