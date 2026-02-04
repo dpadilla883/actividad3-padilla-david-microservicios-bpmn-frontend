@@ -28,7 +28,7 @@ Solución para la **Actividad de Aprendizaje 3**: 2 microservicios (**Authors** 
 ## 2) Tecnologías
 
 - **Backend**: Java 17 + Spring Boot + Spring Data JPA  
-- **BD**: PostgreSQL (**una base por microservicio**)  
+- **BD**: PostgreSQL (por microservicio)  
 - **Frontend**: Vite + React + TypeScript + PrimeReact  
 - **BPMN**: Camunda Modeler (BPMN 2.0 + Token Simulation)  
 - **Deploy**: Docker + Docker Compose  
