@@ -150,7 +150,7 @@ Estados editoriales mínimos:
 
 ## 7) BPMN (Camunda Modeler) 
 
-En `/bpmn` incluie:
+En `/bpmn` incluye:
 
 - Archivo `*.bpmn` exportado
 - Evidencia de Token Simulation
