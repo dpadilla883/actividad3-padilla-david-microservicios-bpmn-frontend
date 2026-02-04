@@ -1,0 +1,103 @@
+version: "3.9"
+
+networks:
+  editorial-net:
+    driver: bridge
+
+volumes:
+  authors_db_data:
+  publications_db_data:
+
+services:
+  db-authors:
+    image: postgres:16
+    container_name: db-authors
+    environment:
+      POSTGRES_DB: ${AUTHORS_DB_NAME}
+      POSTGRES_USER: ${AUTHORS_DB_USER}
+      POSTGRES_PASSWORD: ${AUTHORS_DB_PASS}
+    ports:
+      - "${AUTHORS_DB_PORT}:5432"
+    volumes:
+      - authors_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${AUTHORS_DB_USER} -d ${AUTHORS_DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - editorial-net
+
+  db-publications:
+    image: postgres:16
+    container_name: db-publications
+    environment:
+      POSTGRES_DB: ${PUBLICATIONS_DB_NAME}
+      POSTGRES_USER: ${PUBLICATIONS_DB_USER}
+      POSTGRES_PASSWORD: ${PUBLICATIONS_DB_PASS}
+    ports:
+      - "${PUBLICATIONS_DB_PORT}:5432"
+    volumes:
+      - publications_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PUBLICATIONS_DB_USER} -d ${PUBLICATIONS_DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - editorial-net
+
+  authors-service:
+    build:
+      context: ./authors-service
+    container_name: authors-service
+    depends_on:
+      db-authors:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: ${AUTHORS_PORT}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-authors:5432/${AUTHORS_DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${AUTHORS_DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${AUTHORS_DB_PASS}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "${AUTHORS_PORT}:${AUTHORS_PORT}"
+    networks:
+      - editorial-net
+
+  publications-service:
+    build:
+      context: ./publications-service
+    container_name: publications-service
+    depends_on:
+      db-publications:
+        condition: service_healthy
+      authors-service:
+        condition: service_started
+    environment:
+      SERVER_PORT: ${PUBLICATIONS_PORT}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-publications:5432/${PUBLICATIONS_DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${PUBLICATIONS_DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${PUBLICATIONS_DB_PASS}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      AUTHORS_BASE_URL: http://authors-service:${AUTHORS_PORT}
+      
+    ports:
+      - "${PUBLICATIONS_PORT}:${PUBLICATIONS_PORT}"
+    networks:
+      - editorial-net
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_AUTHORS_API: "http://localhost:${AUTHORS_PORT}"
+        VITE_PUBLICATIONS_API: "http://localhost:${PUBLICATIONS_PORT}"
+    container_name: frontend
+    depends_on:
+      - authors-service
+      - publications-service
+    ports:
+      - "${FRONTEND_PORT}:80"
+    networks:
+      - editorial-net

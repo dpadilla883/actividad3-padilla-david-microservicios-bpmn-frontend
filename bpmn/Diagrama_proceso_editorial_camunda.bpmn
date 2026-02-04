@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_Editorial_v5" targetNamespace="http://example.com/bpmn/editorial" exporter="Camunda Modeler" exporterVersion="5.43.1">
+  <bpmn:collaboration id="Collaboration_Editorial_v5">
+    <bpmn:participant id="Participant_ProcesoEditorial_v5" name="Proceso editorial" processRef="Process_Editorial_v5" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_Editorial_v5" name="Proceso editorial de publicación" isExecutable="true" camunda:historyTimeToLive="P30D">
+    <bpmn:laneSet id="LaneSet_Editorial_v5">
+      <bpmn:lane id="Lane_Autor" name="Autor">
+        <bpmn:flowNodeRef>StartEvent_Inicio</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_Borrador</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_EnviarRevision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_CorregirReenviar</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Revisor" name="Revisor">
+        <bpmn:flowNodeRef>UserTask_RevisionContenido</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Editor" name="Editor">
+        <bpmn:flowNodeRef>UserTask_DecisionEditorial</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Decision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_NotificarRechazo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Rechazado</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_PrepararPublicacion</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_SolicitarCambios</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Publicado</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_Publicar</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_Inicio" name="Inicio">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="EndEvent_Rechazado" name="Rechazado">
+      <bpmn:incoming>Flow_11</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="UserTask_Borrador" name="Redactar borrador (DRAFT)">
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_EnviarRevision" name="Enviar a revisión">
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:incoming>Flow_12</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_CorregirReenviar" name="Corregir y reenviar">
+      <bpmn:incoming>Flow_14</bpmn:incoming>
+      <bpmn:outgoing>Flow_12</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_RevisionContenido" name="Revisión del contenido (IN_REVIEW)">
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_DecisionEditorial" name="Decisión editorial">
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_5</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_Decision" name="¿Aprobar / Cambios / Rechazar?" default="Flow_10">
+      <bpmn:incoming>Flow_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_10</bpmn:outgoing>
+      <bpmn:outgoing>Flow_6</bpmn:outgoing>
+      <bpmn:outgoing>Flow_13</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="UserTask_NotificarRechazo" name="Notificar rechazo">
+      <bpmn:incoming>Flow_10</bpmn:incoming>
+      <bpmn:outgoing>Flow_11</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_PrepararPublicacion" name="Preparar publicación (APPROVED)">
+      <bpmn:incoming>Flow_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_7</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="UserTask_SolicitarCambios" name="Solicitar cambios">
+      <bpmn:incoming>Flow_13</bpmn:incoming>
+      <bpmn:outgoing>Flow_14</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_Inicio" targetRef="UserTask_Borrador" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="UserTask_Borrador" targetRef="UserTask_EnviarRevision" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="UserTask_EnviarRevision" targetRef="UserTask_RevisionContenido" />
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="UserTask_RevisionContenido" targetRef="UserTask_DecisionEditorial" />
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="UserTask_DecisionEditorial" targetRef="Gateway_Decision" />
+    <bpmn:sequenceFlow id="Flow_10" name="Rechazar" sourceRef="Gateway_Decision" targetRef="UserTask_NotificarRechazo" />
+    <bpmn:sequenceFlow id="Flow_11" sourceRef="UserTask_NotificarRechazo" targetRef="EndEvent_Rechazado" />
+    <bpmn:sequenceFlow id="Flow_6" name="Aprobar" sourceRef="Gateway_Decision" targetRef="UserTask_PrepararPublicacion">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!requiereCambios &amp;&amp; aprobado}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="UserTask_PrepararPublicacion" targetRef="UserTask_Publicar" />
+    <bpmn:sequenceFlow id="Flow_9" sourceRef="UserTask_Publicar" targetRef="EndEvent_Publicado" />
+    <bpmn:sequenceFlow id="Flow_13" name="Cambios" sourceRef="Gateway_Decision" targetRef="UserTask_SolicitarCambios">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${requiereCambios}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_14" name="Corregir" sourceRef="UserTask_SolicitarCambios" targetRef="UserTask_CorregirReenviar" />
+    <bpmn:sequenceFlow id="Flow_12" name="Reenviar" sourceRef="UserTask_CorregirReenviar" targetRef="UserTask_EnviarRevision" />
+    <bpmn:endEvent id="EndEvent_Publicado" name="Publicado">
+      <bpmn:incoming>Flow_9</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="UserTask_Publicar" name="Publicar (PUBLISHED)">
+      <bpmn:incoming>Flow_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_9</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Editorial_v5">
+    <bpmndi:BPMNPlane id="BPMNPlane_Editorial_v5" bpmnElement="Collaboration_Editorial_v5">
+      <bpmndi:BPMNShape id="Shape_Participant_v5" bpmnElement="Participant_ProcesoEditorial_v5" isHorizontal="true">
+        <dc:Bounds x="120" y="60" width="1880" height="640" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_Editor_v5" bpmnElement="Lane_Editor" isHorizontal="true">
+        <dc:Bounds x="150" y="420" width="1850" height="280" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_Revisor_v5" bpmnElement="Lane_Revisor" isHorizontal="true">
+        <dc:Bounds x="150" y="230" width="1850" height="190" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Lane_Autor_v5" bpmnElement="Lane_Autor" isHorizontal="true">
+        <dc:Bounds x="150" y="60" width="1850" height="170" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Start_v5" bpmnElement="StartEvent_Inicio">
+        <dc:Bounds x="210" y="135" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_End_Rechazado_v5" bpmnElement="EndEvent_Rechazado">
+        <dc:Bounds x="1450" y="452" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1441" y="493" width="57" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Borrador_v5" bpmnElement="UserTask_Borrador">
+        <dc:Bounds x="290" y="110" width="220" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Enviar_v5" bpmnElement="UserTask_EnviarRevision">
+        <dc:Bounds x="540" y="110" width="210" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Corregir_v5" bpmnElement="UserTask_CorregirReenviar">
+        <dc:Bounds x="1650" y="110" width="220" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Revision_v5" bpmnElement="UserTask_RevisionContenido">
+        <dc:Bounds x="800" y="295" width="310" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_DecisionEditorial_v5" bpmnElement="UserTask_DecisionEditorial">
+        <dc:Bounds x="800" y="465" width="240" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_v5" bpmnElement="Gateway_Decision" isMarkerVisible="true">
+        <dc:Bounds x="1070" y="480" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1033" y="550" width="54" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_NotificarRechazo_v5" bpmnElement="UserTask_NotificarRechazo">
+        <dc:Bounds x="1170" y="435" width="250" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Preparar_v5" bpmnElement="UserTask_PrepararPublicacion">
+        <dc:Bounds x="1170" y="520" width="280" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_SolicitarCambios_v5" bpmnElement="UserTask_SolicitarCambios">
+        <dc:Bounds x="1170" y="620" width="250" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_End_Publicado_v5" bpmnElement="EndEvent_Publicado">
+        <dc:Bounds x="1912" y="542" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1906" y="593" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Publicar_v5" bpmnElement="UserTask_Publicar">
+        <dc:Bounds x="1615" y="520" width="230" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Flow_1_v5" bpmnElement="Flow_1">
+        <di:waypoint x="246" y="153" />
+        <di:waypoint x="290" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_2_v5" bpmnElement="Flow_2">
+        <di:waypoint x="510" y="150" />
+        <di:waypoint x="540" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_3_v5" bpmnElement="Flow_3">
+        <di:waypoint x="645" y="190" />
+        <di:waypoint x="645" y="335" />
+        <di:waypoint x="800" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_4_v5" bpmnElement="Flow_4">
+        <di:waypoint x="955" y="375" />
+        <di:waypoint x="955" y="465" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_5_v5" bpmnElement="Flow_5">
+        <di:waypoint x="1040" y="505" />
+        <di:waypoint x="1070" y="505" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_10_v5" bpmnElement="Flow_10">
+        <di:waypoint x="1095" y="480" />
+        <di:waypoint x="1095" y="470" />
+        <di:waypoint x="1170" y="470" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1086" y="453" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_11_v5" bpmnElement="Flow_11">
+        <di:waypoint x="1420" y="470" />
+        <di:waypoint x="1450" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_6_v5" bpmnElement="Flow_6">
+        <di:waypoint x="1120" y="505" />
+        <di:waypoint x="1170" y="560" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1110" y="543" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_7_v5" bpmnElement="Flow_7">
+        <di:waypoint x="1450" y="560" />
+        <di:waypoint x="1615" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_9_v5" bpmnElement="Flow_9">
+        <di:waypoint x="1845" y="560" />
+        <di:waypoint x="1912" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_13_v5" bpmnElement="Flow_13">
+        <di:waypoint x="1095" y="530" />
+        <di:waypoint x="1095" y="655" />
+        <di:waypoint x="1170" y="655" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1038" y="623" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_14_v5" bpmnElement="Flow_14">
+        <di:waypoint x="1420" y="655" />
+        <di:waypoint x="1580" y="655" />
+        <di:waypoint x="1580" y="150" />
+        <di:waypoint x="1650" y="150" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1589" y="393" width="41" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_12_v5" bpmnElement="Flow_12">
+        <di:waypoint x="1870" y="150" />
+        <di:waypoint x="1960" y="150" />
+        <di:waypoint x="1960" y="85" />
+        <di:waypoint x="645" y="85" />
+        <di:waypoint x="645" y="110" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1907" y="108" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

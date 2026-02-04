@@ -1,0 +1,21 @@
+/* Fondo más oscuro */
+body {
+  background: #070b14 !important;
+}
+
+/* Tarjetas un poquito más oscuras */
+.surface-card {
+  background: #0b1220 !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* Inputs (dropdowns) más elegantes */
+.p-inputtext, .p-dropdown, .p-inputtextarea {
+  background: #0a1020 !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+/* Tabla: head un poquito más contrastado */
+.p-datatable .p-datatable-thead > tr > th {
+  background: #0a1327 !important;
+}

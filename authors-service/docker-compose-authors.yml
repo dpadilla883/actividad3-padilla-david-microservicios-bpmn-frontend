@@ -1,0 +1,15 @@
+services:
+  authors-db:
+    image: postgres:16
+    container_name: authors-db
+    environment:
+      POSTGRES_DB: authors_db
+      POSTGRES_USER: authors_user
+      POSTGRES_PASSWORD: authors_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - authors_db_data:/var/lib/postgresql/data
+
+volumes:
+  authors_db_data:
