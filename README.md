@@ -16,6 +16,7 @@ Solución para la **Actividad de Aprendizaje 3**: 2 microservicios (**Authors** 
 ├─ authors-service/
 ├─ publications-service/
 ├─ frontend/
+├─ docs/    #(informe de la actividad)
 ├─ bpmn/                 
 ├─ docker-compose.yml    
 └─ README.md
